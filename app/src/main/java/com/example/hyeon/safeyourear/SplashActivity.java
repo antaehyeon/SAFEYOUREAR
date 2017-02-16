@@ -45,12 +45,12 @@ public class SplashActivity extends AppCompatActivity {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
 
-                Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+                Intent intent = new Intent(SplashActivity.this, AudioMetryActivity.class);
                 startActivity(intent);
                 finish();
             }
         };
-        handler.sendEmptyMessageDelayed(0, 5000);
+        handler.sendEmptyMessageDelayed(0, 1500);
     }
 
     // 뒤로가기 키 막기
