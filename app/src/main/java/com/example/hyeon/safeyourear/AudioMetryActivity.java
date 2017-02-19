@@ -6,6 +6,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import im.dacer.androidcharts.LineView;
+import it.gmariotti.cardslib.library.internal.Card;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
@@ -40,9 +42,9 @@ public class AudioMetryActivity extends AppCompatActivity {
 
 
     // 그래프 V2 변수들
-    int numberOfLines = 1;
+    int numberOfLines = 2;
     int maxNumberOfLines = 4;
-    int numberOfPoints = 12;
+    int numberOfPoints = 8;
 
     float[][] randomNumbersTab = new float[maxNumberOfLines][numberOfPoints];
 
@@ -50,13 +52,17 @@ public class AudioMetryActivity extends AppCompatActivity {
     private boolean hasAxesNames = true;
     private boolean hasLines = true;
     private boolean hasPoints = true;
-    private ValueShape shape = ValueShape.CIRCLE;
+    private ValueShape diamond = ValueShape.DIAMOND;
+    private ValueShape circle = ValueShape.CIRCLE;
     private boolean isFilled = false;
     private boolean hasLabels = false;
     private boolean isCubic = false;
     private boolean hasLabelForSelected = false;
-    private boolean pointsHaveDifferentColor;
+    private boolean pointsHaveDifferentColor = false;
     private boolean hasGradientToTransparent = false;
+
+    // Card View
+    Card card;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -97,31 +103,33 @@ public class AudioMetryActivity extends AppCompatActivity {
         window.setStatusBarColor(baseColor);
 
 
-        // 그래프 그리기
-        LineView lineView = (LineView) relativeLayout.findViewById(R.id.line_view);
-        initView(lineView);
-//        lineView.setDrawDotLine(false); //optional
-//        lineView.setShowPopup(LineView.SHOW_POPUPS_MAXMIN_ONLY); //optional
-//        LineView.setBottomTextList(strList);
-//        lineView.setColorArray(new int[]{Color.BLACK,Color.GREEN,Color.GRAY,Color.CYAN});
-
-        ArrayList<Integer> dataList = new ArrayList<>();
-        float random = (float)(Math.random()*9+1);
-        for (int i=0; i<9; i++){
-            dataList.add((int)(Math.random()*random));
-        }
-
-        ArrayList<ArrayList<Integer>> dataLists = new ArrayList<>();
-        dataLists.add(dataList);
-
-        lineView.setDataList(dataLists); //or lineView.setFloatDataList(floatDataLists)
+//        // 그래프 그리기
+//        LineView lineView = (LineView) relativeLayout.findViewById(R.id.line_view);
+//        initView(lineView);
+////        lineView.setDrawDotLine(false); //optional
+////        lineView.setShowPopup(LineView.SHOW_POPUPS_MAXMIN_ONLY); //optional
+////        LineView.setBottomTextList(strList);
+////        lineView.setColorArray(new int[]{Color.BLACK,Color.GREEN,Color.GRAY,Color.CYAN});
+//
+//        ArrayList<Integer> dataList = new ArrayList<>();
+//        float random = (float)(Math.random()*9+1);
+//        for (int i=0; i<9; i++){
+//            dataList.add((int)(Math.random()*random));
+//        }
+//
+//        ArrayList<ArrayList<Integer>> dataLists = new ArrayList<>();
+//        dataLists.add(dataList);
+//
+//        lineView.setDataList(dataLists); //or lineView.setFloatDataList(floatDataLists)
 
         // 그래프 그리기 - HelloChart
         chart = (LineChartView) relativeLayout.findViewById(R.id.chart);
 
+        // 그래프에 랜덤 데이터 넣는 부분이였지만, 초기데이터 40으로 지정함
         for (int i = 0; i < maxNumberOfLines; ++i) {
             for (int j = 0; j < numberOfPoints; ++j) {
-                randomNumbersTab[i][j] = (float) Math.random() * 100f;
+//                randomNumbersTab[i][j] = (float) Math.random() * 100f;
+                randomNumbersTab[i][j] = 40;
             }
         }
 
@@ -131,6 +139,11 @@ public class AudioMetryActivity extends AppCompatActivity {
         chart.setViewportCalculationEnabled(false);
 
         resetViewport();
+
+//        previewX();
+
+        // Card View
+        Card card = new Card();
 
     }
 
@@ -151,16 +164,40 @@ public class AudioMetryActivity extends AppCompatActivity {
     private void generateData() {
 
         List<Line> lines = new ArrayList<Line>();
+        Log.i("Generate Data = ", "" + lines.size());
         for (int i = 0; i < numberOfLines; ++i) {
 
+            // 그래프에 데이터 넣는 과정
             List<PointValue> values = new ArrayList<PointValue>();
-            for (int j = 0; j < numberOfPoints; ++j) {
-                values.add(new PointValue(j, randomNumbersTab[i][j]));
+//            for (int j = 0; j < numberOfPoints; ++j) {
+//                values.add(new PointValue(j, randomNumbersTab[i][j]));
+//                Log.i("HYEON", "" + randomNumbersTab[i][j]);
+//            }
+
+            if (i == 1) {
+                values.add(new PointValue(250, 30));
+                values.add(new PointValue(500, 30));
+                values.add(new PointValue(1000, 30));
+                values.add(new PointValue(2000, 30));
+                values.add(new PointValue(4000, 30));
+                values.add(new PointValue(6000, 30));
+                values.add(new PointValue(8000, 30));
+            } else {
+                // PointValue (X, Y좌표)
+                values.add(new PointValue(250, 40));
+                values.add(new PointValue(500, 40));
+                values.add(new PointValue(1000, 40));
+                values.add(new PointValue(2000, 40));
+                values.add(new PointValue(4000, 40));
+                values.add(new PointValue(6000, 40));
+                values.add(new PointValue(8000, 40));
             }
 
+
             Line line = new Line(values);
-            line.setColor(ChartUtils.COLORS[i]);
-            line.setShape(shape);
+            if (i == 1) { line.setColor(ChartUtils.COLORS[4]); } else { line.setColor(ChartUtils.COLOR_BLUE); }
+
+            if (i == 1) { line.setShape(circle); } else { line.setShape(diamond); }
             line.setCubic(isCubic);
             line.setFilled(isFilled);
             line.setHasLabels(hasLabels);
@@ -172,16 +209,35 @@ public class AudioMetryActivity extends AppCompatActivity {
                 line.setPointColor(ChartUtils.COLORS[(i + 1) % ChartUtils.COLORS.length]);
             }
             lines.add(line);
+            Log.i("Generate Data = ", "" + lines.size());
+
         }
 
         data = new LineChartData(lines);
 
         if (hasAxes) {
-            Axis axisX = new Axis();
+            Axis axisX = new Axis().setHasLines(true);
+
+            List<Float> xData = new ArrayList<Float>();
+            xData.add(0f);
+            xData.add(250f);
+            xData.add(500f);
+            xData.add(1000f);
+            xData.add(2000f);
+            xData.add(4000f);
+
+            xData.add(6000f);
+            xData.add(8000f);
+
+            axisX = Axis.generateAxisFromRange(0.0f, 8000.0f, 1000.0f);
+//            axisX = Axis.generateAxisFromCollection(xData);
+            axisX.setHasLines(true);
+
+//            axisX = Axis.generateAxisFromCollection(xData);
             Axis axisY = new Axis().setHasLines(true);
             if (hasAxesNames) {
-                axisX.setName("Axis X");
-                axisY.setName("Axis Y");
+                axisX.setName("Frequency(Hz)");
+                axisY.setName("DBHL(Decibels)");
             }
             data.setAxisXBottom(axisX);
             data.setAxisYLeft(axisY);
@@ -189,10 +245,8 @@ public class AudioMetryActivity extends AppCompatActivity {
             data.setAxisXBottom(null);
             data.setAxisYLeft(null);
         }
-
         data.setBaseValue(Float.NEGATIVE_INFINITY);
         chart.setLineChartData(data);
-
     }
 
     private void resetViewport() {
@@ -202,8 +256,22 @@ public class AudioMetryActivity extends AppCompatActivity {
         v.top = 100;
         v.left = 0;
         v.right = numberOfPoints - 1;
+        v.right = 8000;
+        Log.i("resetViewport", "right = " + v.right);
         chart.setMaximumViewport(v);
         chart.setCurrentViewport(v);
     }
 
+//    private void previewX() {
+//        Viewport tempViewport = new Viewport(chart.getMaximumViewport());
+//        float dx = tempViewport.width() / 4;
+////        dx = 250;
+//        Log.i("HYEON", "dx : " + dx + " TempViewPort : " + tempViewport + " height : " + tempViewport.height());
+//        tempViewport.left = 0;
+//        tempViewport.right = 10;
+//        tempViewport.inset(dx, 0);
+//
+//        chart.setCurrentViewport(tempViewport);
+//
+//    }
 }

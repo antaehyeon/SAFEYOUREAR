@@ -30,4 +30,5 @@ dependencies {
     compile 'com.tsengvn:typekit:1.0.1'
     compile 'im.dacer:AndroidCharts:1.0.3'
     compile 'com.github.lecho:hellocharts-library:1.5.8@aar'
+    compile 'com.github.gabrielemariotti.cards:cardslib-cards:2.1.0'
 }

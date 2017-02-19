@@ -16,24 +16,38 @@
         layout="@layout/toolbar_audiometry"
         android:layout_marginBottom="0dp"/>
 
-    <HorizontalScrollView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/horizontalScrollView"
-        android:paddingTop="64dp"
-        android:layout_alignParentStart="true">
-        <view
-            android:layout_width="wrap_content"
-            android:layout_height="300dp"
-            class="im.dacer.androidcharts.LineView"
-            android:id="@+id/line_view" />
-    </HorizontalScrollView>
+    <!--<HorizontalScrollView-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/horizontalScrollView"-->
+        <!--android:paddingTop="64dp"-->
+        <!--android:layout_alignParentStart="true">-->
+        <!--<view-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="300dp"-->
+            <!--class="im.dacer.androidcharts.LineView"-->
+            <!--android:id="@+id/line_view" />-->
+    <!--</HorizontalScrollView>-->
 
+    <!--android:layout_below="@+id/horizontalScrollView"-->
+    <!--android:layout_below="@+id/include"-->
     <lecho.lib.hellocharts.view.LineChartView
         android:id="@+id/chart"
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:layout_below="@+id/horizontalScrollView"
+        android:layout_width="wrap_content"
+        android:layout_height="300dp"
+        android:paddingTop="64dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="15dp"
         android:layout_alignParentStart="true" />
+
+    <it.gmariotti.cardslib.library.view.CardViewNative
+        android:id="@+id/carddemo"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="12dp"
+        android:layout_below="@+id/chart"/>
+
 
 </RelativeLayout>
