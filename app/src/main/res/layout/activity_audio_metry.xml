@@ -40,14 +40,23 @@
         android:paddingRight="15dp"
         android:layout_alignParentStart="true" />
 
-    <it.gmariotti.cardslib.library.view.CardViewNative
-        android:id="@+id/carddemo"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginTop="12dp"
-        android:layout_below="@+id/chart"/>
+    <!--<it.gmariotti.cardslib.library.view.CardViewNative-->
+        <!--android:id="@+id/carddemo"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="100dp"-->
+        <!--android:layout_marginLeft="5dp"-->
+        <!--android:layout_marginRight="5dp"-->
+        <!--android:layout_marginTop="12dp"-->
+        <!--android:layout_below="@+id/chart"/>-->
 
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/my_recycler_view"
+        android:scrollbars="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_below="@+id/chart"/>
 
 </RelativeLayout>

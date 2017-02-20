@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Window;
@@ -64,9 +66,16 @@ public class AudioMetryActivity extends AppCompatActivity {
     // Card View
     Card card;
 
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
+    private ArrayList<MyData> myDataset;
+
     @Override
     protected void attachBaseContext(Context newBase) {
+
         super.attachBaseContext(TypekitContextWrapper.wrap(newBase));
+
     }
 
     @Override
@@ -143,14 +152,29 @@ public class AudioMetryActivity extends AppCompatActivity {
 //        previewX();
 
         // Card View
-        Card card = new Card();
+        mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
+
+        // use a linear layout manager
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+
+        // specify an adapter (see also next example)
+        myDataset = new ArrayList<>();
+        mAdapter = new MyAdapter(myDataset);
+        mRecyclerView.setAdapter(mAdapter);
+
+//        myDataset.add(new MyData("#InsideOut", R.mipmap.insideout));
+//        myDataset.add(new MyData("#Mini", R.mipmap.mini));
+//        myDataset.add(new MyData("ToyStory", R.mipmap.toystory));
+
+        myDataset.add(new MyData("현재 진행하고 있는 단계는 1 단계 입니다.", "현재 테스트중인 데시벨은 1000Hz 입니다."));
 
     }
 
     // 그래프 초기화 메소드
     private void initView(LineView lineView) {
         ArrayList<String> test = new ArrayList<String>();
-        for (int i=0; i<9; i++){
+        for (int i=0; i<9; i++) {
             test.add(String.valueOf(i+1));
         }
         lineView.setBottomTextList(test);
