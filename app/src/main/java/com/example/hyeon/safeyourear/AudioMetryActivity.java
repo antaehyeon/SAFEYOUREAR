@@ -3,16 +3,21 @@ package com.example.hyeon.safeyourear;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.media.AudioFormat;
+import android.media.AudioManager;
+import android.media.AudioTrack;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.tsengvn.typekit.TypekitContextWrapper;
 
@@ -20,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import im.dacer.androidcharts.LineView;
-import it.gmariotti.cardslib.library.internal.Card;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
@@ -63,13 +67,36 @@ public class AudioMetryActivity extends AppCompatActivity {
     private boolean pointsHaveDifferentColor = false;
     private boolean hasGradientToTransparent = false;
 
-    // Card View
-    Card card;
+//    // Card View
+//    Card card;
+//
+//    private RecyclerView mRecyclerView;
+//    private RecyclerView.Adapter mAdapter;
+//    private RecyclerView.LayoutManager mLayoutManager;
+//    private ArrayList<MyData> myDataset;
 
-    private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
-    private ArrayList<MyData> myDataset;
+    TextView txtStep, txtFreq, txtEar;
+
+    Button btnCantHear;
+    Button btnFreqUp;
+    Button btnFreqDown;
+
+    // Tone Generator
+    private int duration = 2;  // seconds
+    private int sampleRate = 44100;
+    private int numSamples = duration * sampleRate;
+    private double sample[] = new double[numSamples];
+    private double freqOfTone = 750; // hz
+
+    public byte generatedSnd[] = new byte[2 * numSamples];
+
+    Handler handler = new Handler();
+
+    private AudioManager audioManager;
+    public AudioTrack audioTrack = null;
+
+    boolean btnCantHearClick = false;
+
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -151,24 +178,60 @@ public class AudioMetryActivity extends AppCompatActivity {
 
 //        previewX();
 
-        // Card View
-        mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
-
-        // use a linear layout manager
-        mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-
-        // specify an adapter (see also next example)
-        myDataset = new ArrayList<>();
-        mAdapter = new MyAdapter(myDataset);
-        mRecyclerView.setAdapter(mAdapter);
+//        // Card View
+//        mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
+//
+//        // use a linear layout manager
+//        mLayoutManager = new LinearLayoutManager(this);
+//        mRecyclerView.setLayoutManager(mLayoutManager);
+//
+//        // specify an adapter (see also next example)
+//        myDataset = new ArrayList<>();
+//        mAdapter = new MyAdapter(myDataset);
+//        mRecyclerView.setAdapter(mAdapter);
 
 //        myDataset.add(new MyData("#InsideOut", R.mipmap.insideout));
 //        myDataset.add(new MyData("#Mini", R.mipmap.mini));
 //        myDataset.add(new MyData("ToyStory", R.mipmap.toystory));
 
-        myDataset.add(new MyData("현재 진행하고 있는 단계는 1 단계 입니다.", "현재 테스트중인 데시벨은 1000Hz 입니다."));
+//        myDataset.add(new MyData("현재 진행하고 있는 단계는 1 단계 입니다.", "현재 테스트중인 데시벨은 1000Hz 입니다."));
 
+
+        // 아래쪽에서 STEP 변수들
+        txtStep = (TextView) findViewById(R.id.tv_step);
+        txtFreq = (TextView) findViewById(R.id.tv_freq);
+
+        txtEar = (TextView) findViewById(R.id.tv_ear);
+        // BLUE : #2196F3 (BLUE)
+        // RED : #F44336 (RED)
+        txtEar.setTextColor(Color.parseColor("#F44336"));
+
+
+        btnCantHear = (Button) findViewById(R.id.btn_cantHear);
+        btnCantHear.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!btnCantHearClick) {
+                    btnCantHear.setText("들리지 않으면\n클릭하세요");
+                    btnCantHearClick = true;
+                    toastMessage("테스트가 시작됩니다.");
+                } else {
+                    // 역치 정하고 데이터 저장하는 부분으로 진행
+                }
+            }
+        });
+        btnFreqDown = (Button) findViewById(R.id.btn_freqDown);
+        btnFreqUp = (Button) findViewById(R.id.btn_freqUp);
+
+        btnCantHear.setText("시작하려면 버튼을 \n클릭하세요");
+
+    }
+
+    public void toastMessage (CharSequence text) {
+        Context context = getApplicationContext();
+        int duration = Toast.LENGTH_SHORT;
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.show();
     }
 
     // 그래프 초기화 메소드
@@ -259,6 +322,7 @@ public class AudioMetryActivity extends AppCompatActivity {
 
 //            axisX = Axis.generateAxisFromCollection(xData);
             Axis axisY = new Axis().setHasLines(true);
+//            axisY = Axis.generateAxisFromRange(0.0f, 100.0f, -10.0f);
             if (hasAxesNames) {
                 axisX.setName("Frequency(Hz)");
                 axisY.setName("DBHL(Decibels)");
@@ -298,4 +362,64 @@ public class AudioMetryActivity extends AppCompatActivity {
 //        chart.setCurrentViewport(tempViewport);
 //
 //    }
+
+    public void genTone(){
+        // fill out the array
+        for (int i = 0; i < numSamples; ++i) {
+            sample[i] = Math.sin(2 * Math.PI * i / (sampleRate/freqOfTone));
+        }
+
+        // convert to 16 bit pcm sound array
+        // assumes the sample buffer is normalised.
+        int idx = 0;
+        for (final double dVal : sample) {
+            // scale to maximum amplitude
+            final short val = (short) ((dVal * 32767));
+            // in 16 bit wav PCM, first byte is the low order byte
+            generatedSnd[idx++] = (byte) (val & 0x00ff);
+            generatedSnd[idx++] = (byte) ((val & 0xff00) >>> 8);
+
+        }
+    }
+
+    public void playSound() {
+
+        audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, sampleRate,
+                AudioFormat.CHANNEL_OUT_STEREO, AudioFormat.ENCODING_PCM_16BIT,
+                numSamples, AudioTrack.MODE_STATIC);
+        audioTrack.write(generatedSnd, 0, generatedSnd.length);
+        audioTrack.getChannelConfiguration();
+        try {
+            audioTrack.play();
+        } catch (Exception e) { // error message if not playable
+            Toast.makeText(getApplicationContext(), "Error playing audio",
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void playTone(float left, float right) { // overloaded playTone
+        // method with volume
+        // determined by user
+        Float leftVolume = left;
+        Float rightVolume = right;
+        try {
+            audioTrack.write(generatedSnd, 0, generatedSnd.length);// pass
+            // genSound
+            // into
+            // write
+            // method
+            audioTrack.setStereoVolume(leftVolume, rightVolume); // left and
+            // right
+            // are set
+            // by
+            // user
+            // choice
+            audioTrack.play();
+        } catch (Exception e) { // error message if not playable
+            Toast.makeText(getApplicationContext(), "Error playing audio",
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_audio_metry"
     android:layout_width="match_parent"
@@ -31,14 +32,6 @@
 
     <!--android:layout_below="@+id/horizontalScrollView"-->
     <!--android:layout_below="@+id/include"-->
-    <lecho.lib.hellocharts.view.LineChartView
-        android:id="@+id/chart"
-        android:layout_width="wrap_content"
-        android:layout_height="300dp"
-        android:paddingTop="64dp"
-        android:paddingLeft="5dp"
-        android:paddingRight="15dp"
-        android:layout_alignParentStart="true" />
 
     <!--<it.gmariotti.cardslib.library.view.CardViewNative-->
         <!--android:id="@+id/carddemo"-->
@@ -49,14 +42,203 @@
         <!--android:layout_marginTop="12dp"-->
         <!--android:layout_below="@+id/chart"/>-->
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/my_recycler_view"
-        android:scrollbars="vertical"
+    <!--<android.support.v7.widget.RecyclerView-->
+        <!--android:id="@+id/my_recycler_view"-->
+        <!--android:scrollbars="vertical"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="120dp"-->
+        <!--android:layout_marginTop="12dp"-->
+        <!--android:layout_marginLeft="10dp"-->
+        <!--android:layout_marginRight="10dp"-->
+        <!--android:layout_below="@+id/chart"/>-->
+
+    <LinearLayout
+        android:id="@+id/LL_title"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_below="@+id/chart"/>
+        android:layout_height="15dp"
+        android:weightSum="100"
+        android:layout_marginTop="25dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="15dp"
+        android:layout_below="@+id/chart"
+        android:layout_alignParentStart="true">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="13dp"
+            android:layout_weight="38"
+            app:srcCompat="@drawable/step_bluegreen_big"
+            android:id="@+id/imageView_step"/>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="22"
+            app:srcCompat="@drawable/freq_yellow_big"
+            android:id="@+id/imageView_freq"/>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="13dp"
+            android:layout_weight="40"
+            app:srcCompat="@drawable/ear_white_big"
+            android:id="@+id/imageView_ear"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/LL_number"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_below="@+id/LL_title"
+        android:layout_marginTop="3dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="15dp"
+        android:orientation="horizontal"
+        android:weightSum="100">
+
+        <TextView
+            android:id="@+id/tv_step"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="38"
+            android:text="01"
+            android:textSize="30dp"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/tv_freq"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="22"
+            android:text="2000"
+            android:textSize="30dp"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/tv_ear"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="40"
+            android:text="LEFT"
+            android:textSize="30dp"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:gravity="center"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/LL_decibel"
+        android:layout_width="match_parent"
+        android:layout_height="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="15dp"
+        android:weightSum="100"
+        android:layout_below="@+id/LL_number"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="25dp"
+            android:layout_weight="40"
+            app:srcCompat="@drawable/current_decibel"/>
+
+
+        <TextView
+            android:id="@+id/tv_surroundDecibel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:textColor="@android:color/white"
+            android:layout_weight="50"
+            android:gravity="right"
+            android:text="40"
+            android:textStyle="bold"
+            android:textSize="16.5dp"/>
+
+
+        <ImageView
+            android:id="@+id/imageView_dB"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="10"
+            android:layout_marginRight="5dp"
+            android:layout_alignParentEnd="true"
+            app:srcCompat="@drawable/db_white"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/LL_decibel"
+        android:layout_marginTop="25dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginBottom="20dp"
+        android:orientation="horizontal"
+        android:weightSum="100">
+
+        <Button
+            android:id="@+id/btn_cantHear"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/roundedbutton"
+            android:layout_weight="45"
+            android:text="들리지 않습니다"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="10"/>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/roundedbutton"
+            android:layout_weight="45"
+            android:weightSum="100"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btn_freqUp"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@drawable/roundedbutton"
+                android:text="▲"
+                android:layout_weight="48"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="4"/>
+
+            <Button
+                android:id="@+id/btn_freqDown"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@drawable/roundedbutton"
+                android:text="▼"
+                android:layout_weight="48"/>
+
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <lecho.lib.hellocharts.view.LineChartView
+        android:id="@+id/chart"
+        android:layout_width="wrap_content"
+        android:layout_height="420dp"
+        android:paddingTop="64dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="20dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
 
 </RelativeLayout>
