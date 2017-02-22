@@ -82,7 +82,7 @@ public class AudioMetryActivity extends AppCompatActivity {
     Button btnFreqDown;
 
     // Tone Generator
-    private int duration = 2;  // seconds
+    private int duration = 60; // seconds
     private int sampleRate = 44100;
     private int numSamples = duration * sampleRate;
     private double sample[] = new double[numSamples];
@@ -97,6 +97,30 @@ public class AudioMetryActivity extends AppCompatActivity {
 
     boolean btnCantHearClick = false;
 
+    public static final int LEFT = 1;
+    public static final int RIGHT = 2;
+
+    public static final int SHORT = 1;
+    public static final int LONG = 2;
+
+    List<Line> lines;
+    List<PointValue> leftValue, rightValue;
+
+    Line leftLine, rightLine;
+
+    float leftTone = 0.5f;
+    float rightTone = 0.5f;
+
+    // Frequency Index (RightValue, LeftValue)
+    public static final int FREQ250 = 0;
+    public static final int FREQ500 = 1;
+    public static final int FREQ1000 = 2;
+    public static final int FREQ2000 = 3;
+    public static final int FREQ4000 = 4;
+    public static final int FREQ6000 = 5;
+    public static final int FREQ8000 = 6;
+
+    int freq250LeftDecibel = 30;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -214,24 +238,108 @@ public class AudioMetryActivity extends AppCompatActivity {
                 if (!btnCantHearClick) {
                     btnCantHear.setText("들리지 않으면\n클릭하세요");
                     btnCantHearClick = true;
-                    toastMessage("테스트가 시작됩니다.");
+                    toastMessage("테스트가 시작됩니다.", SHORT);
+                    toastMessage("버튼을 이용해 들리지 않을때까지 조정하세요", LONG);
+                    audioMetryDataChange(1, 1000, LEFT);
+
+                    genTone();
+                    playSound();
+                    playTone(1.0f, 0.0f);
+
                 } else {
                     // 역치 정하고 데이터 저장하는 부분으로 진행
+                    setSineWaveData(60, 44100, (int)(Math.random() * 8000) + 1);
+                    genTone();
+                    playSound();
+                    playTone(0.5f, 0.5f);
                 }
             }
         });
         btnFreqDown = (Button) findViewById(R.id.btn_freqDown);
+        btnFreqDown.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toastMessage("DOWN 버튼을 클릭하였습니다", SHORT);
+                leftTone -= 0.1f;
+                rightTone -= 0.1f;
+                playTone(leftTone, rightTone);
+            }
+        });
         btnFreqUp = (Button) findViewById(R.id.btn_freqUp);
+        btnFreqUp.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                leftTone += 0.1f;
+                rightTone += 0.1f;
+                playTone(leftTone, rightTone);
+
+                //public void setGraphData(int index, int graphFreq, int graphDecibel, int graphEar)
+                freq250LeftDecibel -= 5;
+                setGraphData(FREQ250, 250, freq250LeftDecibel, LEFT);
+
+            }
+        });
 
         btnCantHear.setText("시작하려면 버튼을 \n클릭하세요");
 
+        // 하드웨어 오디오 볼륨 조절
+        audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 5, 0);
+
     }
 
-    public void toastMessage (CharSequence text) {
+    /*
+    seque   0,   1,    2,    3,    4,    5,    6
+    index 250, 500, 1000, 2000, 4000, 6000, 8000
+    */
+    public void setGraphData(int index, int graphFreq, int graphDecibel, int graphEar) {
+        PointValue tempPV = new PointValue(graphFreq, graphDecibel);
+
+        // LEFT == 1
+        if (graphEar == LEFT) {
+            leftValue.set(index, tempPV);
+        } else {
+            rightValue.set(index, tempPV);
+        }
+    }
+
+    public void setSineWaveData(int duration, int sampleRate, int freqOfTone) {
+        this.duration = duration;
+        this.sampleRate = sampleRate;
+        this.freqOfTone = freqOfTone;
+
+        numSamples = duration * sampleRate;
+        sample = new double[numSamples];
+
+        generatedSnd = new byte[2 * numSamples];
+
+    }
+
+    public void toastMessage (CharSequence text, int mode) {
+        int toastMode;
         Context context = getApplicationContext();
-        int duration = Toast.LENGTH_SHORT;
-        Toast toast = Toast.makeText(context, text, duration);
+        if (mode == 1) {
+            toastMode = Toast.LENGTH_SHORT;
+        } else {
+            toastMode = Toast.LENGTH_LONG;
+        }
+
+        Toast toast = Toast.makeText(context, text, toastMode);
         toast.show();
+    }
+
+    public void audioMetryDataChange(int step, int freq, int ear) {
+        if (step < 10) {
+            txtStep.setText("0"+String.valueOf(step));
+        } else {
+            txtStep.setText(String.valueOf(step));
+        }
+        txtFreq.setText(String.valueOf(freq));
+        if (ear == 1) {
+            txtEar.setText("LEFT");
+        } else {
+            txtEar.setText("RIGHT");
+        }
     }
 
     // 그래프 초기화 메소드
@@ -250,55 +358,70 @@ public class AudioMetryActivity extends AppCompatActivity {
     // 그래프 V2
     private void generateData() {
 
-        List<Line> lines = new ArrayList<Line>();
+        lines = new ArrayList<Line>();
         Log.i("Generate Data = ", "" + lines.size());
-        for (int i = 0; i < numberOfLines; ++i) {
 
-            // 그래프에 데이터 넣는 과정
-            List<PointValue> values = new ArrayList<PointValue>();
+        // 그래프에 데이터 넣는 과정
+        leftValue = new ArrayList<PointValue>();
+        rightValue = new ArrayList<PointValue>();
 //            for (int j = 0; j < numberOfPoints; ++j) {
 //                values.add(new PointValue(j, randomNumbersTab[i][j]));
 //                Log.i("HYEON", "" + randomNumbersTab[i][j]);
 //            }
 
-            if (i == 1) {
-                values.add(new PointValue(250, 30));
-                values.add(new PointValue(500, 30));
-                values.add(new PointValue(1000, 30));
-                values.add(new PointValue(2000, 30));
-                values.add(new PointValue(4000, 30));
-                values.add(new PointValue(6000, 30));
-                values.add(new PointValue(8000, 30));
-            } else {
-                // PointValue (X, Y좌표)
-                values.add(new PointValue(250, 40));
-                values.add(new PointValue(500, 40));
-                values.add(new PointValue(1000, 40));
-                values.add(new PointValue(2000, 40));
-                values.add(new PointValue(4000, 40));
-                values.add(new PointValue(6000, 40));
-                values.add(new PointValue(8000, 40));
-            }
+        // PointValue (X, Y좌표)
+        leftValue.add(new PointValue(250, 30));
+        leftValue.add(new PointValue(500, 30));
+        leftValue.add(new PointValue(1000, 30));
+        leftValue.add(new PointValue(2000, 30));
+        leftValue.add(new PointValue(4000, 30));
+        leftValue.add(new PointValue(6000, 30));
+        leftValue.add(new PointValue(8000, 30));
 
+        // PointValue (X, Y좌표)
+        rightValue.add(new PointValue(250, 40));
+        rightValue.add(new PointValue(500, 40));
+        rightValue.add(new PointValue(1000, 40));
+        rightValue.add(new PointValue(2000, 40));
+        rightValue.add(new PointValue(4000, 40));
+        rightValue.add(new PointValue(6000, 40));
+        rightValue.add(new PointValue(8000, 40));
 
-            Line line = new Line(values);
-            if (i == 1) { line.setColor(ChartUtils.COLORS[4]); } else { line.setColor(ChartUtils.COLOR_BLUE); }
+        leftLine = new Line(leftValue);
+        rightLine = new Line(rightValue);
 
-            if (i == 1) { line.setShape(circle); } else { line.setShape(diamond); }
-            line.setCubic(isCubic);
-            line.setFilled(isFilled);
-            line.setHasLabels(hasLabels);
-            line.setHasLabelsOnlyForSelected(hasLabelForSelected);
-            line.setHasLines(hasLines);
-            line.setHasPoints(hasPoints);
-            //line.setHasGradientToTransparent(hasGradientToTransparent);
-            if (pointsHaveDifferentColor){
-                line.setPointColor(ChartUtils.COLORS[(i + 1) % ChartUtils.COLORS.length]);
-            }
-            lines.add(line);
-            Log.i("Generate Data = ", "" + lines.size());
+        leftLine.setColor(ChartUtils.COLORS[4]); // RED
+        rightLine.setColor(ChartUtils.COLORS[0]); // BLUE
 
-        }
+        leftLine.setShape(circle);
+        rightLine.setShape(diamond);
+
+        leftLine.setCubic(isCubic);
+        leftLine.setFilled(isFilled);
+        leftLine.setHasLabels(hasLabels);
+        leftLine.setHasLabelsOnlyForSelected(hasLabelForSelected);
+        leftLine.setHasLines(hasLines);
+        leftLine.setHasPoints(hasPoints);
+
+        rightLine.setCubic(isCubic);
+        rightLine.setFilled(isFilled);
+        rightLine.setHasLabels(hasLabels);
+        rightLine.setHasLabelsOnlyForSelected(hasLabelForSelected);
+        rightLine.setHasLines(hasLines);
+        rightLine.setHasPoints(hasPoints);
+
+//        if (pointsHaveDifferentColor){
+//            line.setPointColor(ChartUtils.COLORS[(i + 1) % ChartUtils.COLORS.length]);
+//        }
+
+        leftLine.setPointRadius(5);
+        rightLine.setPointRadius(5);
+
+        lines.add(leftLine);
+        lines.add(rightLine);
+
+        PointValue pv = new PointValue(250, 10);
+        rightValue.set(0, pv);
 
         data = new LineChartData(lines);
 
@@ -363,7 +486,7 @@ public class AudioMetryActivity extends AppCompatActivity {
 //
 //    }
 
-    public void genTone(){
+    void genTone(){
         // fill out the array
         for (int i = 0; i < numSamples; ++i) {
             sample[i] = Math.sin(2 * Math.PI * i / (sampleRate/freqOfTone));
