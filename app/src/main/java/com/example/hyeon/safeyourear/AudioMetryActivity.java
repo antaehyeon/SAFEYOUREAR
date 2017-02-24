@@ -92,12 +92,6 @@ public class AudioMetryActivity extends AppCompatActivity {
 
     public byte generatedSnd[] = new byte[2 * numSamples];
 
-    // Tone Generator
-    private int tmpNumSamples = duration * sampleRate;
-    private double tmpSample[] = new double [tmpNumSamples];
-
-    public byte tmpGeneratedSnd[] = new byte[2 * tmpNumSamples];
-
     private AudioManager audioManager;
     public AudioTrack audioTrack = null;
 
@@ -132,7 +126,7 @@ public class AudioMetryActivity extends AppCompatActivity {
     // Freq Left Decibel
     int freq250LeftDecibel = 30;
     int freq500LeftDecibel = 30;
-    public int freq1000LeftDecibel = 30;
+    int freq1000LeftDecibel = 30;
     int freq2000LeftDecibel = 30;
     int freq4000LeftDecibel = 30;
     int freq6000LeftDecibel = 30;
@@ -141,7 +135,7 @@ public class AudioMetryActivity extends AppCompatActivity {
     // Freq Right Decibel
     int freq250RightDecibel = 30;
     int freq500RightDecibel = 30;
-    public int freq1000RightDecibel = 30;
+    int freq1000RightDecibel = 30;
     int freq2000RightDecibel = 30;
     int freq4000RightDecibel = 30;
     int freq6000RightDecibel = 30;
@@ -152,8 +146,6 @@ public class AudioMetryActivity extends AppCompatActivity {
     int earState = LEFT;
 
     boolean threadCancel = false;
-
-    Button tempButton;
 
     private TimerTask second;
     private final Handler handler = new Handler();
@@ -175,7 +167,10 @@ public class AudioMetryActivity extends AppCompatActivity {
     public void Update() {
         Runnable updater = new Runnable() {
             public void run() {
+                controlFreq(1);
+                genTone();
                 playSound(leftTone, rightTone);
+//                playTone(leftTone, rightTone);
             }
         };
         handler.post(updater);
@@ -190,8 +185,6 @@ public class AudioMetryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio_metry);
-
-        tempButton = (Button) findViewById(R.id.temp_button);
 
         // ActionBar 대신 ToolBar 생성
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolBar_audiometry);
@@ -303,7 +296,7 @@ public class AudioMetryActivity extends AppCompatActivity {
 
 //                    setSineWaveData(60, 44100, 1000);
 //                    genTone();
-                    playSound(0.5f, 0.0f);
+//                    playSound(0.5f, 0.0f);
 //                    playTone(0.5f, 0.0f);
 
                     decibelStart();
@@ -320,10 +313,12 @@ public class AudioMetryActivity extends AppCompatActivity {
 
                     controlFreq(step);
                     genTone();
-                    playTone(0.5f, 0.0f);
-
-//                    GeneratedSineWave generatedSineWave = new GeneratedSineWave();
-//                    generatedSineWave.start();
+                    decibelStart();
+                    if (earState == LEFT) {
+                        playTone(0.5f, 0.0f);
+                    } else {
+                        playTone(0.0f, 0.5f);
+                    }
                 }
             }
         });
@@ -356,14 +351,6 @@ public class AudioMetryActivity extends AppCompatActivity {
             }
         });
 
-        tempButton.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                playSound(1.0f, 1.0f);
-                toastMessage("PLAY!!", SHORT);
-            }
-        });
-
         btnCantHear.setText("시작하려면 버튼을 \n클릭하세요");
 
         // 하드웨어 오디오 볼륨 조절
@@ -373,15 +360,6 @@ public class AudioMetryActivity extends AppCompatActivity {
         txtStep.setText(null);
         txtFreq.setText(null);
         txtEar.setText(null);
-
-        controlFreq(1);
-//        setSineWaveData(240, 44100, 1000);
-        genTone();
-
-    }
-
-    public void timerStart() {
-
     }
 
     /*
@@ -413,18 +391,6 @@ public class AudioMetryActivity extends AppCompatActivity {
 
         generatedSnd = new byte[2 * numSamples];
 
-    }
-
-    public void setTmpSineWaveData(int duration, int sampleRate, int freqOfTone) {
-        tmpSample = null;
-        this.duration = duration;
-        this.sampleRate = sampleRate;
-        this.freqOfTone = freqOfTone;
-
-        tmpNumSamples = duration * sampleRate;
-        tmpSample = new double[tmpNumSamples];
-
-        tmpGeneratedSnd = new byte[2 * tmpNumSamples];
     }
 
     public void toastMessage (CharSequence text, int mode) {
@@ -499,22 +465,22 @@ public class AudioMetryActivity extends AppCompatActivity {
                 setSineWaveData(2, 44100, 1000);
                 break;
             case 2:
-                setSineWaveData(80, 44100, 250);
+                setSineWaveData(2, 44100, 250);
                 break;
             case 3:
-                setSineWaveData(80, 44100, 500);
+                setSineWaveData(2, 44100, 500);
                 break;
             case 4:
-                setSineWaveData(80, 44100, 2000);
+                setSineWaveData(2, 44100, 2000);
                 break;
             case 5:
-                setSineWaveData(80, 44100, 4000);
+                setSineWaveData(2, 44100, 4000);
                 break;
             case 6:
-                setSineWaveData(80, 44100, 6000);
+                setSineWaveData(2, 44100, 6000);
                 break;
             case 7:
-                setSineWaveData(80, 44100, 8000);
+                setSineWaveData(2, 44100, 8000);
                 break;
         }
 //        threadCancel = true;
@@ -687,13 +653,13 @@ public class AudioMetryActivity extends AppCompatActivity {
         leftValue.add(new PointValue(8000, 30));
 
         // PointValue (X, Y좌표)
-        rightValue.add(new PointValue(250, 40));
-        rightValue.add(new PointValue(500, 40));
-        rightValue.add(new PointValue(1000, 40));
-        rightValue.add(new PointValue(2000, 40));
-        rightValue.add(new PointValue(4000, 40));
-        rightValue.add(new PointValue(6000, 40));
-        rightValue.add(new PointValue(8000, 40));
+        rightValue.add(new PointValue(250, 30));
+        rightValue.add(new PointValue(500, 30));
+        rightValue.add(new PointValue(1000, 30));
+        rightValue.add(new PointValue(2000, 30));
+        rightValue.add(new PointValue(4000, 30));
+        rightValue.add(new PointValue(6000, 30));
+        rightValue.add(new PointValue(8000, 30));
 
         leftLine = new Line(leftValue);
         rightLine = new Line(rightValue);
@@ -811,27 +777,16 @@ public class AudioMetryActivity extends AppCompatActivity {
         // convert to 16 bit pcm sound array
         // assumes the sample buffer is normalised.
         int idx = 0;
-        if (step % 2 != 0) {
-            for (final double dVal : sample) {
-                // scale to maximum amplitude
-                final short val = (short) ((dVal * 32767));
-                // in 16 bit wav PCM, first byte is the low order byte
-                generatedSnd[idx++] = (byte) (val & 0x00ff);
-                generatedSnd[idx++] = (byte) ((val & 0xff00) >>> 8);
-            }
-        } else {
-            for (final double dVal : tmpSample) {
-                // scale to maximum amplitude
-                final short val = (short) ((dVal * 32767));
-                // in 16 bit wav PCM, first byte is the low order byte
-                tmpGeneratedSnd[idx++] = (byte) (val & 0x00ff);
-                tmpGeneratedSnd[idx++] = (byte) ((val & 0xff00) >>> 8);
-            }
+        for (final double dVal : sample) {
+            // scale to maximum amplitude
+            final short val = (short) ((dVal * 32767));
+            // in 16 bit wav PCM, first byte is the low order byte
+            generatedSnd[idx++] = (byte) (val & 0x00ff);
+            generatedSnd[idx++] = (byte) ((val & 0xff00) >>> 8);
         }
     }
 
     public void playSound(float left, float right) {
-
         audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, sampleRate,
                 AudioFormat.CHANNEL_OUT_STEREO, AudioFormat.ENCODING_PCM_16BIT,
                 numSamples, AudioTrack.MODE_STATIC);
@@ -840,9 +795,14 @@ public class AudioMetryActivity extends AppCompatActivity {
         audioTrack.setStereoVolume(left, right);
         try {
             audioTrack.play();
+            Log.i("HYEON" , "playsound TRY");
         } catch (Exception e) { // error message if not playable
-            Toast.makeText(getApplicationContext(), "Error playing audio",
-                    Toast.LENGTH_SHORT).show();
+            controlFreq(step);
+            genTone();
+            playSound(leftTone, rightTone);
+            Log.i("HYEON" , "playsound Catch - error?");
+//            Toast.makeText(getApplicationContext(), "Error playing audio",
+//                    Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -863,7 +823,7 @@ public class AudioMetryActivity extends AppCompatActivity {
             // by
             // user
             // choice
-            audioTrack.play();
+//            audioTrack.play();
         } catch (Exception e) { // error message if not playable
             Toast.makeText(getApplicationContext(), "Error playing audio",
                     Toast.LENGTH_SHORT).show();
