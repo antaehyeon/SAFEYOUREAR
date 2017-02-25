@@ -1,6 +1,7 @@
 package com.example.hyeon.safeyourear;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.media.AudioFormat;
@@ -152,6 +153,10 @@ public class AudioMetryActivity extends AppCompatActivity {
 
     int timer_sec = 0;
     int count = 0;
+
+    Singleton mSingleton;
+
+    Button tempButton;
 
     public void decibelStart() {
         second = new TimerTask() {
@@ -320,6 +325,30 @@ public class AudioMetryActivity extends AppCompatActivity {
                         playTone(0.0f, 0.5f);
                     }
                 }
+
+                // 다른 Class로 넘겨주기 위해서 마지막 단계일경우 데시벨 정보를 저장시킴
+                if (step == 7 && earState == LEFT) {
+                    mSingleton.setFreqLeftData(freq250LeftDecibel,
+                                            freq500LeftDecibel,
+                                            freq1000LeftDecibel,
+                                            freq2000LeftDecibel,
+                                            freq4000LeftDecibel,
+                                            freq6000LeftDecibel,
+                                            freq8000LeftDecibel);
+                }
+
+                if (step == 7 && earState == RIGHT) {
+                    mSingleton.setFreqRightData(freq250RightDecibel,
+                                                freq500RightDecibel,
+                                                freq1000RightDecibel,
+                                                freq2000RightDecibel,
+                                                freq4000RightDecibel,
+                                                freq6000RightDecibel,
+                                                freq8000RightDecibel);
+
+                }
+
+
             }
         });
         btnFreqDown = (Button) findViewById(R.id.btn_freqDown);
@@ -360,6 +389,28 @@ public class AudioMetryActivity extends AppCompatActivity {
         txtStep.setText(null);
         txtFreq.setText(null);
         txtEar.setText(null);
+
+        tempButton = (Button) findViewById(R.id.btn_tempNextActivity);
+        tempButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mSingleton.setFreqLeftData(freq250LeftDecibel,
+                        freq500LeftDecibel,
+                        freq1000LeftDecibel,
+                        freq2000LeftDecibel,
+                        freq4000LeftDecibel,
+                        freq6000LeftDecibel,
+                        freq8000LeftDecibel);
+
+                Intent intent = new Intent(AudioMetryActivity.this, AudioMetryResultActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        // SINGLETON GET INSTANCE
+        mSingleton = Singleton.getInstance();
+
+
     }
 
     /*

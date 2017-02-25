@@ -240,4 +240,12 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true" />
 
+    <Button
+        android:id="@+id/btn_tempNextActivity"
+        android:text="TEMP\nBUTTON"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/LL_decibel"
+        android:layout_alignStart="@+id/LL_decibel" />
+
 </RelativeLayout>
