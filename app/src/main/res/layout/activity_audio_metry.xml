@@ -200,7 +200,7 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:background="@drawable/roundedbutton"
+            android:background="#213b4c"
             android:layout_weight="45"
             android:weightSum="100"
             android:orientation="vertical">

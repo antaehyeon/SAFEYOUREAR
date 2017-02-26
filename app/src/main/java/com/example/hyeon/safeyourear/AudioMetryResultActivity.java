@@ -57,20 +57,19 @@ public class AudioMetryResultActivity extends AppCompatActivity {
     private boolean pointsHaveDifferentColor = false;
     private boolean hasGradientToTransparent = false;
 
-    Line averageLine;
+    Line averageLine, leftLine, rightLine;
     LineChartData data;
 
     List<Line> lines;
-    List<PointValue> averageValues;
+    List<PointValue> averageValues, leftValues, rightValues;
 
     float[] freqData = {250, 500, 1000, 2000, 4000, 6000, 8000};
+    float[] freqDecibelAverage;
     float[] freqDecibelRight;
     float[] freqDecibelLeft;
 
     // VARIABLE - SINGLETON
     Singleton mSingleton;
-
-
 
 
     // FONT SETTING
@@ -118,10 +117,15 @@ public class AudioMetryResultActivity extends AppCompatActivity {
         // AudioMetryActivity 에서 Data 받아오기 (사용자가 조정한 Decibel을 Singleton 을 이용해서 받아온다)
         freqDecibelLeft = mSingleton.getFreqLeftData();
         freqDecibelRight = mSingleton.getFreqRightData();
-
-        Log.i("HYEON", "AudioMetryResultActivity ADDRESS : " + freqDecibelLeft);
         for (int i = 0; i < 7; i++) {
-            Log.i("HYEON", "freqDecibelLeft [" + i + "] : " + freqDecibelLeft[i]);
+            Log.i("HYEON", "FREQ RIGHT " + i + " : " + freqDecibelRight[i]);
+        }
+        freqDecibelAverage = new float[7];
+        for (int i = 0; i < 7; i++) {
+            freqDecibelAverage[i] = (float)(Math.random()*100);
+        }
+        for (int i = 0; i < 7; i++) {
+            Log.i("HYEON", "FREQ AVERAGE " + i + " : " + freqDecibelAverage[i]);
         }
 
         // Graph Draw
@@ -131,46 +135,41 @@ public class AudioMetryResultActivity extends AppCompatActivity {
         resetViewport();
         resultChart.setViewportCalculationEnabled(false);
 
-        /*
-            청력측정한 데이터를 액티비티 구성할 때 받아옴
-            0, 1, 2, 3, 4, 5, 6, 7
-            250, 500, 1000, 2000, 4000, 6000, 8000
-        */
+        /* 청력측정한 데이터를 액티비티 구성할 때 받아옴
+           0, 1, 2, 3, 4, 5, 6, 7
+           250, 500, 1000, 2000, 4000, 6000, 8000 */
 
         mContext = getApplicationContext();
-
 
     } // onCreate VOID
 
 
     // Graph Draw - 데이터 생성
     private void generateData() {
-
         lines = new ArrayList<Line>();
 
         // 그래프에 데이터 넣는 과정
         averageValues = new ArrayList<PointValue>();
+        leftValues = new ArrayList<PointValue>();
+        rightValues = new ArrayList<PointValue>();
         for (int i = 0; i < 7; i++) {
-            Log.i("HYEON", "generateData FOR " + i);
-            Log.i("HYEON", "freqData[" + i + "] : " + freqData[i]);
-            Log.i("HYEON", "freqDecibelLeft[" + i + "] : " + freqDecibelLeft[i]);
-            averageValues.add(new PointValue(freqData[i], freqDecibelLeft[i]));
+            averageValues.add(new PointValue(freqData[i], freqDecibelAverage[i]));
+            leftValues.add(new PointValue(freqData[i], freqDecibelLeft[i]));
+            rightValues.add(new PointValue(freqData[i], freqDecibelRight[i]));
         } // FOR INPUT GRAPH DATA 0-6
 
         // 라인 속성들 지정
         averageLine = new Line(averageValues);
-        averageLine.setColor(ChartUtils.COLORS[2]);
-        averageLine.setShape(diamond);
-        averageLine.setCubic(isCubic);
-        averageLine.setFilled(isFilled);
-        averageLine.setHasLabels(hasLabels);
-        averageLine.setHasLabelsOnlyForSelected(hasLabelForSelected);
-        averageLine.setHasLines(hasLines);
-        averageLine.setHasPoints(hasPoints);
-        averageLine.setPointRadius(1);
+        leftLine = new Line(leftValues);
+        rightLine = new Line(rightValues);
+        setGraphProperties(averageLine, 2);
+        setGraphProperties(leftLine, 4);
+        setGraphProperties(rightLine, 0);
 
         // ArrayList에 Line 하나 추가
         lines.add(averageLine);
+        lines.add(leftLine);
+        lines.add(rightLine);
 
         // LineChartData에 최종으로 ArrayList Lines가 들어감
         data = new LineChartData(lines);
@@ -205,6 +204,21 @@ public class AudioMetryResultActivity extends AppCompatActivity {
         resultChart.setMaximumViewport(v);
         resultChart.setCurrentViewport(v);
     } // RESET VIEW PORT FUNCTION
+
+    public void setGraphProperties(Line mLine, int color) {
+        mLine.setColor(ChartUtils.COLORS[color]);
+        mLine.setShape(diamond);
+        mLine.setCubic(isCubic);
+        mLine.setFilled(isFilled);
+        mLine.setHasLabels(hasLabels);
+        mLine.setHasLabelsOnlyForSelected(hasLabelForSelected);
+        mLine.setHasLines(hasLines);
+        mLine.setHasPoints(hasPoints);
+        mLine.setPointRadius(1);
+    }
+
+
+
 
 
 
