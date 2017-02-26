@@ -5,8 +5,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Window;
@@ -29,6 +27,8 @@ import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.LineChartView;
 
 public class AudioMetryResultActivity extends AppCompatActivity {
+
+    Context mContext;
 
     // COLORS : 색깔 변수들
     int whiteColor = Color.parseColor("#FFFFFF");
@@ -64,11 +64,6 @@ public class AudioMetryResultActivity extends AppCompatActivity {
     List<PointValue> averageValues;
 
     float[] freqData = {250, 500, 1000, 2000, 4000, 6000, 8000};
-
-    // VARIABLE - RECYCLER VIEW
-    LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
-    RecyclerView mRecylerView;
-
     float[] freqDecibelRight;
     float[] freqDecibelLeft;
 
@@ -76,8 +71,9 @@ public class AudioMetryResultActivity extends AppCompatActivity {
     Singleton mSingleton;
 
 
-    // FONT CHANGE : 폰트 변경
-    @Override
+
+
+    // FONT SETTING
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(TypekitContextWrapper.wrap(newBase));
     }
@@ -135,17 +131,13 @@ public class AudioMetryResultActivity extends AppCompatActivity {
         resetViewport();
         resultChart.setViewportCalculationEnabled(false);
 
-        // Recycler View를 위한 RecyclerView 선언 후에 LinearLayoutManager 을 set
-//        mRecylerView.setLayoutManager(mLayoutManager);
-
         /*
             청력측정한 데이터를 액티비티 구성할 때 받아옴
             0, 1, 2, 3, 4, 5, 6, 7
             250, 500, 1000, 2000, 4000, 6000, 8000
         */
 
-
-
+        mContext = getApplicationContext();
 
 
     } // onCreate VOID
@@ -216,12 +208,6 @@ public class AudioMetryResultActivity extends AppCompatActivity {
 
 
 
-} // AudioMetryResultActivity CLASS
 
-//public class ViewHolder extends RecyclerView.ViewHolder {
-//    public TextView mTextView;
-//    public ViewHolder(TextView v) {
-//        super(v);
-//        mTextView = v;
-//    }
-//}
+
+} // AudioMetryResultActivity CLASS

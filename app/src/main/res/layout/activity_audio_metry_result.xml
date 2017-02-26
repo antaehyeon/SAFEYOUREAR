@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_audio_metry_result"
     android:layout_width="match_parent"
@@ -34,13 +35,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="10dp"
-            android:background="#FFFFFF"
+            android:background="@drawable/rounded_radius"
             android:layout_weight="50"
             android:orientation="vertical">
 
             <lecho.lib.hellocharts.view.LineChartView
                 android:id="@+id/resultChart"
-                android:layout_margin="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
         </LinearLayout>
@@ -51,17 +51,192 @@
             android:layout_height="match_parent"
             android:layout_weight="50"
             android:orientation="vertical"
-            android:layout_margin="10dp"
+            android:background="@drawable/rounded_radius"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
             android:layout_below="@+id/linearL_graph"
+            android:weightSum="96"
             >
 
-            <!--<android.support.v7.widget.RecyclterView-->
-                <!--android:id="@+id/recycler_view"-->
-                <!--android:layout_weight="match_parent"-->
-                <!--android:layout_height="match_parent">-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="30"
+                android:weightSum="100"
+                android:orientation="horizontal">
 
-            <!--</android.support.v7.widget.RecyclterView>-->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="70"
+                    android:orientation="horizontal"
+                    android:weightSum="100">
 
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center"
+                        app:srcCompat="@drawable/check"
+                        android:layout_weight="30"/>
+
+                    <!--<TextView-->
+                        <!--android:layout_width="0dp"-->
+                        <!--android:layout_height="match_parent"-->
+                        <!--android:layout_centerVertical="true"-->
+                        <!--android:gravity="left|center"-->
+                        <!--android:text="accuracy"-->
+                        <!--android:textSize="20dp"-->
+                        <!--android:layout_weight="70"/>-->
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="40"
+                        android:layout_gravity="center"
+                        app:srcCompat="@drawable/accuracy_black_letter"/>
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="30"/>
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="30"
+                    android:textColor="#000000"
+                    android:text="98%"
+                    android:textStyle="bold"
+                    android:textSize="30dp"
+                    android:gravity="center"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="3"
+                android:layout_marginRight="15dp"
+                android:layout_marginLeft="15dp"
+                android:background="@drawable/line"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="30"
+                android:weightSum="100">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="70"
+                    android:orientation="horizontal"
+                    android:weightSum="100">
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center"
+                        app:srcCompat="@drawable/ear_black"
+                        android:layout_weight="30"/>
+
+                    <!--<TextView-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="match_parent"-->
+                    <!--android:layout_centerVertical="true"-->
+                    <!--android:gravity="left|center"-->
+                    <!--android:text="accuracy"-->
+                    <!--android:textSize="20dp"-->
+                    <!--android:layout_weight="70"/>-->
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="40"
+                        android:layout_gravity="center"
+                        app:srcCompat="@drawable/condition_black_letter"
+                        android:id="@+id/imageView2" />
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="30"/>
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="28"
+                    android:textColor="#8BC34A"
+                    android:text="GOOD"
+                    android:textStyle="bold"
+                    android:textSize="30dp"
+                    android:gravity="center"/>
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="3"
+                android:layout_marginRight="15dp"
+                android:layout_marginLeft="15dp"
+                android:background="@drawable/line"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="30"
+                android:weightSum="100"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="30"
+                    android:orientation="horizontal"
+                    android:weightSum="100">
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="5"/>
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="10"
+                        android:layout_gravity="center"
+                        app:srcCompat="@drawable/comment"/>
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="20"
+                        app:srcCompat="@drawable/comment_black_letter"/>
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="70"
+                    android:paddingLeft="25dp"
+                    android:text="안태현 님의 청력측정 결과입니다. 청력측정시 소음정도를 기준으로 정확도는 98% 이며, 상태는 나이에 기준하여 양호합니다. 주파수 1000 부분에서 약간의 청력손실이 의심되니 주의하시기 바랍니다."/>
+
+            </LinearLayout>
 
         </LinearLayout>
 
