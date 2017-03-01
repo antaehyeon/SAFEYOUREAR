@@ -65,8 +65,10 @@ public class AudioMetryResultActivity extends AppCompatActivity {
 
     float[] freqData = {250, 500, 1000, 2000, 4000, 6000, 8000};
     float[] freqDecibelAverage;
+    float[] tempFreqAverage = {20, 15, 5, 10, 10, 15, 20};
     float[] freqDecibelRight;
     float[] freqDecibelLeft;
+
 
     // VARIABLE - SINGLETON
     Singleton mSingleton;
@@ -153,10 +155,14 @@ public class AudioMetryResultActivity extends AppCompatActivity {
         leftValues = new ArrayList<PointValue>();
         rightValues = new ArrayList<PointValue>();
         for (int i = 0; i < 7; i++) {
-            averageValues.add(new PointValue(freqData[i], freqDecibelAverage[i]));
+//            averageValues.add(new PointValue(freqData[i], freqDecibelAverage[i]));
             leftValues.add(new PointValue(freqData[i], freqDecibelLeft[i]));
             rightValues.add(new PointValue(freqData[i], freqDecibelRight[i]));
         } // FOR INPUT GRAPH DATA 0-6
+
+        for (int i = 0; i < 7; i++) {
+            averageValues.add(new PointValue(freqData[i], tempFreqAverage[i]));
+        }
 
         // 라인 속성들 지정
         averageLine = new Line(averageValues);
